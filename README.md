@@ -1,26 +1,82 @@
-# Distributed-Banking-System-Part-2
-Setup
-Relevant Technologies used in the setup are : S.No Name
-1. Python (3.9)
-2. JSON
-3. Multiprocessing
-4. Grpcio (1.59)
-5. Grpcio-tools (1.59)
-6. Protobuf (4.24.4)
-7. Future (0.18.3)
-8. os
 
-Implementation Processes
-The following important files are included in this project:
-• main.py: Main program to be executed from the command line with: python main.py input.json
-• input.json: Input file containing a list of branch processes and customer processes with transaction events
-• Output1.json: The output file containing list of all the events taken place on each customer & sorted by clock value. (This file will be overwritten each time the program is ran).
-• Output2.json: The output file containing List all the events taken place on each branch.
-• Output3.json: The output file containing List all the events (along with their logical times)
-triggered by each customer Deposit/Withdraw request
-• branch.proto: Protocol buffer file defining RPC messages & services. This file has
-already been compiled to produce the branch_pb2.py & branch_pb2_grpc.py files.
-• Branch.py: Branch class served as a gRPC server to process customer transactions and
-propagate them to other branches.
-• Customer.py: Customer class with gRPC client branch stub to send transaction requests
-to its corresponding bank branch.
+# 🕒 Distributed Banking System with Lamport Logical Clocks (gRPC)
+
+## 🧩 Problem Statement
+
+To enable secure deposit and withdrawal transactions across multiple branches while ensuring synchronized and consistent data replication. Each customer interacts with a specific branch, and the system ensures consistency using Lamport’s logical clocks.
+
+---
+
+## 🎯 Project Goal
+
+Build upon the gRPC-based distributed banking system (Part 1) by implementing **Lamport’s Logical Clock algorithm** to coordinate events across distributed processes. This ensures a correct “happens-before” relationship between events across branches and customers in the system.
+
+---
+
+## ✅ Key Objectives
+
+- Integrate **logical clock tracking** into both customer and branch processes.
+- Implement **Lamport's clock synchronization rules** across all communication layers.
+- Maintain **causality and event ordering** across gRPC-based RPC calls.
+- Generate multiple structured output files reflecting logical timestamps:
+  - Customer-side event order
+  - Branch-side propagation history
+  - Combined trace for all propagated events
+
+---
+
+## ⚙️ Technologies Used
+
+| Tool/Library       | Version  |
+|--------------------|----------|
+| Python             | 3.9      |
+| gRPC (grpcio)      | 1.59     |
+| grpcio-tools       | 1.59     |
+| Protobuf           | 4.24.4   |
+| Multiprocessing    | Stdlib   |
+| JSON, OS, Future   | Various  |
+
+---
+
+## 🚀 Implementation Highlights
+
+- **Logical Clock Integration:**  
+  Every process (customer/branch) maintains its own logical clock. Events update local clocks based on the Lamport algorithm before sending and after receiving messages.
+
+- **Event Propagation:**  
+  All deposit and withdraw requests are tagged with a unique `customer-request-id`, and logical time is carried throughout the event lifecycle across all processes.
+
+- **Clock Coordination:**  
+  - Clock increment before sending events  
+  - Clock sync on receiving an event (max of local and received + 1)
+
+- **gRPC Services Extended:**  
+  Existing service interfaces (`Deposit`, `Withdraw`, `Propagate`) were extended to carry logical timestamps.
+
+---
+
+## 🧪 Output Results
+
+Three structured JSON output files are produced:
+
+1. **Output1.json:**  
+   Lists all events initiated by customers, ordered by logical time.
+
+2. **Output2.json:**  
+   Logs all branch-side operations including propagation and reception of events.
+
+3. **Output3.json:**  
+   Full trace of all events (with timestamps) triggered by each customer request, showing causal chains.
+
+✅ Sample evaluation results:
+- `Checker_part_1`: 20/20 correct
+- `Checker_part_2`: 360/360 correct
+- `Checker_part_3`: 400/400 correct
+
+---
+
+## 📖 Notes
+
+This project reinforces understanding of **event ordering in distributed systems**, especially in the context of **banking systems requiring consistency**. Lamport’s algorithm ensures proper propagation and reception sequencing without needing synchronized physical clocks.
+
+---
