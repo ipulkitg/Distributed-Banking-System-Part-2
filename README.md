@@ -74,9 +74,3 @@ Three structured JSON output files are produced:
 - `Checker_part_3`: 400/400 correct
 
 ---
-
-## 📖 Notes
-
-This project reinforces understanding of **event ordering in distributed systems**, especially in the context of **banking systems requiring consistency**. Lamport’s algorithm ensures proper propagation and reception sequencing without needing synchronized physical clocks.
-
----
